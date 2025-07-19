@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>中秋拼图</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+    <p id="tip">正在计算，请稍后...<button onclick="onReturn();">返回</button></p>
+    <table id="zqpt">
+        <tr>
+            <th colspan="6">
+                <label for="fileInput">数据文件:</label>
+                <input type="file" id="fileInput" accept=".json">
+            </th>
+            <th><button onclick="onCalcScore();">计算</button></th>
+            <th><button onclick="onClearDatas();">清空</button></th>
+            <th><button onclick="onSaveDatas();">保存</button></th>
+        </tr>
+    </table>
+    <table id="map">
+        <tr>
+            <th id="info" colspan="6"></th>
+            <th><button onclick="onPreviousMap();">←</button></th>
+            <th><button onclick="onReturn();">返回</button></th>
+            <th><button onclick="onNextMap();">→</button></th>
+        </tr>
+    </table>
+    <hr>
+    <canvas id="mycanvas"></canvas>
+    <script src="./page.js"></script>
+    <script src="./data.js"></script>
+    <script src="./calc.js"></script>
+    <script src="./draw.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+body {
+    background-color: white;
+}
+
+table {
+    border: none;
+    border-collapse: collapse;
+}
+
+td{
+    border: 1px solid black;
+    text-align: center;
+    height: 30px;
+}
+
+th{
+    border: none;
+}
+
+input[type="text"] {
+    border: none;
+}

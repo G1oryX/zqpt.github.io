@@ -1,0 +1,187 @@
+var PROGRAM=Program();
+function Program() {
+    var index=0;//地图索引
+    var status=0;//程序状态
+    var Calc=null;//计算状态
+    return {
+        setCalc:function(calc) {Calc=calc;},
+        previousMap:function() {
+            if (Calc != null) {
+                if (index>0) {index--;}
+                this.setStatus(3);
+            }
+        },
+        nextMap:function() {
+            if (Calc != null) {
+                if (index<9) {index++;}
+                this.setStatus(3);
+            }
+        },
+        setStatus:function(newValue) {
+            status=newValue;
+            document.getElementById("tip").style.display=newValue==2 ? 'block' : 'none';
+            document.getElementById("zqpt").style.display=newValue==2 ? 'none' : 'block';
+            document.getElementById("map").style.display=newValue==3 ? 'block' : 'none';
+            document.getElementById("mycanvas").style.display=newValue==3 ? 'block' : 'none';
+            var inputs=document.getElementById("zqpt").getElementsByTagName("input");
+            for (var i = 0; i < inputs.length; i++) {inputs[i].readOnly=newValue>1;}
+            if (newValue==3) {
+                if (Calc!=null) {
+                    document.getElementById("info").innerText='总数：'+Calc.getTotal()+'，总分：'+Calc.getScore()+'，第'+String(index+1)+'张图。';
+                    DRAW.draw(Calc.getMap(index));
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+            } else {
+                window.scrollTo(0,0);
+            }
+        },
+        getStatus:function() {return status;}
+    }
+}
+
+window.onload=function() {
+    //初始化绘图
+    DRAW.init();
+
+    //初始化表格数据
+    DATA.clearDatas(true);
+
+    //初始化监听文件，并上传
+    var fileInput=document.getElementById("fileInput");
+    try {
+        fileInput.addEventListener('change', function() {onLoadDatas(fileInput);});
+    } catch (error) {//老浏览器
+        fileInput.onchange=function() {onLoadDatas(fileInput);}
+    }
+
+    //初始化状态
+    PROGRAM.setStatus(1);
+}
+
+function handleChanged(dom) {//监测表格数据变化
+    if (PROGRAM.getStatus()==1) {//只能输入一个数字，非数字设为0
+        if (!(/^[0-9]$/.test(dom.value))) {
+            dom.value=0;
+        }
+    }
+}
+
+function onClearDatas() {
+    if (PROGRAM.getStatus()==1) {
+        DATA.clearDatas(false);
+    }
+}
+
+function onSaveDatas() {
+    if (confirm("是否下载文件table.json?")) {DATA.saveDatas();}
+}
+
+function onLoadDatas(dom) {
+    var file,fileName,fileExtension;
+    try {
+        file = dom.files[0];
+        fileName=file.name;
+    } catch (error) {//老浏览器
+        file = dom.value;
+        var parts = file.split(/[\/\\]/);
+        fileName=parts[parts.length - 1];
+    }
+    if (file) {//获取文件
+        fileExtension = fileName.split('.').pop(); // 获取文件扩展名
+        if (fileExtension=="json") {
+            DATA.loadDatas(file);
+        } else {
+            alert("不是标准的json文件");
+        }
+    }
+}
+
+function onPreviousMap() {
+    if (PROGRAM.getStatus()==3) {
+        PROGRAM.previousMap();
+    }
+}
+
+function onNextMap() {
+    if (PROGRAM.getStatus()==3) {
+        PROGRAM.nextMap();
+    }
+}
+
+function onReturn() {
+    if (PROGRAM.getStatus()==3) {
+        var datas=DATA.getDatas();
+        DATA.setTableDatas(datas,datas);
+        DATA.setDatas([]);
+        PROGRAM.setCalc(null);
+    }
+    PROGRAM.setStatus(1);
+}
+
+function onCalcScore() {//计算得分
+    var CHECK_MAX_RATIO=1.5;
+    var CHECK_MIN_VALUE=2;
+    var CHECK_MAX_COUNT=15;
+    if (PROGRAM.getStatus()==1) {//刷新页面
+        PROGRAM.setStatus(2);
+        var datas=DATA.getTableDatas();
+        var i,j,k,all;
+        var totals=[0,0,0,0,0,0,0];
+
+        //保存原表格数据
+        var newDatas=DATA.initDatas();
+        for (i=0;i<47;i++) {
+            newDatas[i]=datas[i];
+        }
+        for (i=47;i<94;i++) {all=0;
+            for (j=0;j<7;j++) {
+                k=datas[i][j];
+                if (k>0) {
+                    if (all+k<=CHECK_MAX_COUNT) {
+                        all+=k;
+                        newDatas[i][j]=k;
+                        totals[j]+=k;
+                    } else {
+                        newDatas[i][j]=CHECK_MAX_COUNT-all;
+                        totals[j]+=CHECK_MAX_COUNT-all;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //总数的检查
+        var max=Math.max(totals[2],totals[3],totals[4],totals[5],totals[6]);
+        var min=Math.min(totals[2],totals[3],totals[4],totals[5],totals[6]);
+        if (min<=CHECK_MIN_VALUE) {
+            alert("稻田、房屋、耕牛、草地、枫树。每种总数不能少于"+String(CHECK_MIN_VALUE));
+            PROGRAM.setStatus(1);
+            return;
+        }
+        if (max/min > CHECK_MAX_RATIO) {
+            alert("稻田、房屋、耕牛、草地、枫树的总数比值不能超过"+String(CHECK_MAX_RATIO));
+            PROGRAM.setStatus(1);
+            return;
+        }
+        if (totals[1]*12>totals[5]) {
+            alert("草地必须比月桂树总数的12倍还要多！");
+            PROGRAM.setStatus(1);
+            return;
+        }
+        if (totals[0]*3>min) {
+            alert("基础图块必须比亭子总数的3倍还要多！");
+            PROGRAM.setStatus(1);
+            return;
+        }
+
+        //更新表格数据
+        DATA.setDatas(datas);
+        DATA.setTableDatas(datas,newDatas);
+
+        //开始计算
+        calculate(totals);
+        PROGRAM.setStatus(3);
+        alert("计算完毕！");
+        return;
+    }
+}
