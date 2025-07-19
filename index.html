@@ -6,12 +6,32 @@
     <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
 <body>
-    <p id="tip">正在计算，请稍后...<button onclick="onReturn();">返回</button></p>
+    <div id="help">
+        <h2>帮助：</h2>
+        <br>
+        <p>1.推荐电脑上打开，编辑表格数据，tab键快速切换到下一格。</p>
+        <br>
+        <p>2.编辑完毕后，点击“计算”，约1分钟出结果。</p>
+        <br>
+        <p>3.计算后，依照更新后的表格数据（红色代表变动的数据）和下方地图，回游戏切号去拼。</p>
+        <br>
+        <p>4.点击“保存”以下载成员和拼图数据，“清空”只清除拼图，不清除成员名称。</p>
+        <p>下次运行时点击“浏览”，选择上次保存的文件（如table.json），可省去编辑名称。</p>
+        <br>
+        <h3>注意：</h3>
+        <br>
+        <p>①成员名称不影响拼图结果，联盟成员不足47人的末尾可以不填。</p>
+        <br>
+        <p>②拼图数据请及时保存，一旦退出网页，所有数据丢失。</p>
+        <br>
+    </div>
+    <p id="tip">正在计算，请稍等......<button onclick="onReturn();">返回</button></p>
     <table id="zqpt">
         <tr>
             <th colspan="6">
                 <label for="fileInput">数据文件:</label>
                 <input type="file" id="fileInput" accept=".json">
+                <button onclick="onHelp();">帮助</button>
             </th>
             <th><button onclick="onCalcScore();">计算</button></th>
             <th><button onclick="onClearDatas();">清空</button></th>
@@ -21,9 +41,9 @@
     <table id="map">
         <tr>
             <th id="info" colspan="6"></th>
-            <th><button onclick="onPreviousMap();">←</button></th>
+            <th><button onclick="onPreviousMap();">上一张</button></th>
             <th><button onclick="onReturn();">返回</button></th>
-            <th><button onclick="onNextMap();">→</button></th>
+            <th><button onclick="onNextMap();">下一张</button></th>
         </tr>
     </table>
     <hr>

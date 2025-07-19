@@ -19,8 +19,9 @@ function Program() {
         },
         setStatus:function(newValue) {
             status=newValue;
-            document.getElementById("tip").style.display=newValue==2 ? 'block' : 'none';
-            document.getElementById("zqpt").style.display=newValue==2 ? 'none' : 'block';
+            document.getElementById("help").style.display=newValue==4 ? 'block' : 'none';
+            document.getElementById("tip").style.display=newValue % 2==0 ? 'block' : 'none';
+            document.getElementById("zqpt").style.display=newValue % 2==0 ? 'none' : 'block';
             document.getElementById("map").style.display=newValue==3 ? 'block' : 'none';
             document.getElementById("mycanvas").style.display=newValue==3 ? 'block' : 'none';
             var inputs=document.getElementById("zqpt").getElementsByTagName("input");
@@ -66,6 +67,13 @@ function handleChanged(dom) {//监测表格数据变化
     }
 }
 
+function onHelp() {
+    var state=PROGRAM.getStatus();
+    if (state==1||state==3) {
+        PROGRAM.setStatus(4);
+    }
+}
+
 function onClearDatas() {
     if (PROGRAM.getStatus()==1) {
         DATA.clearDatas(false);
@@ -73,7 +81,11 @@ function onClearDatas() {
 }
 
 function onSaveDatas() {
-    if (confirm("是否下载文件table.json?")) {DATA.saveDatas();}
+    if (PROGRAM.getStatus()==1) {
+        if (confirm("是否下载文件table.json?")) {
+            DATA.saveDatas();
+        }
+    }
 }
 
 function onLoadDatas(dom) {
@@ -87,7 +99,7 @@ function onLoadDatas(dom) {
         fileName=parts[parts.length - 1];
     }
     if (file) {//获取文件
-        fileExtension = fileName.split('.').pop(); // 获取文件扩展名
+        fileExtension = fileName.split('.').pop();
         if (fileExtension=="json") {
             DATA.loadDatas(file);
         } else {
@@ -150,7 +162,7 @@ function onCalcScore() {//计算得分
             }
         }
 
-        //总数的检查
+        //总数检查
         var max=Math.max(totals[2],totals[3],totals[4],totals[5],totals[6]);
         var min=Math.min(totals[2],totals[3],totals[4],totals[5],totals[6]);
         if (min<=CHECK_MIN_VALUE) {
