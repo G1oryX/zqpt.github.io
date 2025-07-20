@@ -71,7 +71,7 @@ function Datas() {
                     text=cells[j].getElementsByTagName("input");
                     value=text[0].value.substring(0,1);
                     k=TABLE_HEADER_ORDER[j-2]-1;
-                    datas[i+45][j-2] = /^[0-9]$/.test(value) ? parseInt(value) : 0;
+                    datas[i+45][k] = /^[0-9]$/.test(value) ? parseInt(value) : 0;
                 }
             }
             return datas;

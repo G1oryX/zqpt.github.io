@@ -2,9 +2,10 @@ var DRAW=Draw();
 function Draw() {
     //CANVAS显示画面异常时用户可自行调整数值。
     //CANVAS长度和高度，旋转中心X坐标和Y坐标，格子大小和间隙。
-    var CANVAS=[800,600,300,200,25,2];
+    var CANVAS=[800,600,300,300,25,2];
     var DRAW_COLORS=["rgb(0,0,0)","rgb(255, 0, 0)","rgb(255,255,0)","rgb(0,255,0)","rgb(127,127,127)",
         "rgb(255,255,0)","rgb(128,128,0)","rgb(255,0,0)","rgb(255,255,255)"];//图块颜色
+    var dpr = window.devicePixelRatio || 1;
     return {
         init:function() {
             var CELL_NAME=["空白","亭子","月桂树","耕牛","房屋","稻田","草地","枫树","墙壁"];//格子名称
@@ -37,35 +38,34 @@ function Draw() {
             if (result!=null) {
                 canvas.insertAdjacentElement("beforebegin",result);
             }
-            var spans=document.getElementsByTagName("span");
+            var spans=document.getElementById("map").getElementsByTagName("span");
             for (i=0;i<spans.length;i++) {
                 spans[i].style.backgroundColor=DRAW_COLORS[i];
                 if (i==1 || i==2) {spans[i].style.border="2px solid black";}
             }
             spans[0].style.color="white";
             var canvas = document.getElementById("mycanvas");
-            var dpr = window.devicePixelRatio || 1;
             try {
-                canvas.width = CANVAS[0] * dpr;
-                canvas.height = CANVAS[1] * dpr;
-                canvas.style.width = CANVAS[0] + 'px';
-                canvas.style.height = CANVAS[1] + 'px';
-                var ctx = canvas.getContext('2d');//不支持canvas此句将报错
-                ctx.scale(dpr, dpr);
-                ctx.translate(CANVAS[2], CANVAS[3]);
-                ctx.rotate(Math.PI / 4);
-                ctx.translate(-CANVAS[2], -CANVAS[3]);
+                this.initCanvas(canvas);
             } catch (error) {
                 CANVAS=null;
                 var text='',tr;
-                for (i = 0; i < 13; i++) {
+                for (i = 0; i < 19; i++) {
                     tr='<tr>';
-                    for (j = 0; j < 19; j++) {
+                    for (j = 0; j < 13; j++) {
                         tr+='<td></td>';
                     }
                     text=text+tr+'</tr>';
                 }
-                document.body.insertAdjacentElement("beforeend",insertTableHTML(canvas,text));
+                document.getElementsByTagName("hr")[0].insertAdjacentElement("beforebegin",insertTableHTML(canvas,text));
+            }
+            if (CANVAS==null) {
+                table=document.getElementById("canvasset");
+                try {
+                    table.remove();
+                } catch (error) {
+                    table.removeNode(true);
+                }
             }
         },
         draw:function (map) {
@@ -105,11 +105,44 @@ function Draw() {
                     y=i>10 ? (i-10)*2: 0;
                     for (j=0;j<l;j++) {
                         z=map[i][j+k];
-                        tds[y][x].innerText=CELL_NAME[z];
-                        tds[y][x].style.backgroundColor=DRAW_COLORS[z];
+                        tds[x][y].innerText=CELL_NAME[z];
+                        tds[x][y].style.backgroundColor=DRAW_COLORS[z];
                         x--;y++;
                     }
                 }
+            }
+        },
+        initCanvas:function(canvas) {
+            canvas.width = CANVAS[0] * dpr;
+            canvas.height = CANVAS[1] * dpr;
+            canvas.style.width = CANVAS[0] + 'px';
+            canvas.style.height = CANVAS[1] + 'px';
+            var ctx = canvas.getContext('2d');//不支持canvas此句将报错
+            ctx.scale(dpr, dpr);
+            ctx.translate(CANVAS[2], CANVAS[3]);
+            ctx.rotate(-Math.PI / 4);
+            ctx.translate(-CANVAS[2], -CANVAS[3]);
+        },
+        canvasSet:function(status) {
+            if (CANVAS!=null) {
+                var table=document.getElementById("canvasset");
+                if (status==4) {
+                    document.getElementById("mycanvas").style.display='block';
+                    table.style.display='block';
+                    var i,input=table.getElementsByTagName("input");
+                    for (i=0;i<input.length;i++) {
+                        input[i].value=String(CANVAS[i]);
+                    }
+                } else {
+                    table.style.display='none';
+                }
+            }
+        },
+        isPreview:function() {return CANVAS!=null;},
+        applySet:function(newCanvas) {
+            if (CANVAS!=null) {
+                CANVAS=newCanvas;
+                this.initCanvas(document.getElementById("mycanvas"));
             }
         }
     }

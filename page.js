@@ -25,12 +25,14 @@ function Program() {
             document.getElementById("map").style.display=newValue==3 ? 'block' : 'none';
             document.getElementById("mycanvas").style.display=newValue==3 ? 'block' : 'none';
             var inputs=document.getElementById("zqpt").getElementsByTagName("input");
+            (document.getElementsByTagName("b"))[0].innerText=newValue==2 ? "正在计算，请稍等..." : "";
+            DRAW.canvasSet(newValue);
             for (var i = 0; i < inputs.length; i++) {inputs[i].readOnly=newValue>1;}
             if (newValue==3) {
                 if (Calc!=null) {
                     document.getElementById("info").innerText='总数：'+Calc.getTotal()+'，总分：'+Calc.getScore()+'，第'+String(index+1)+'张图。';
                     DRAW.draw(Calc.getMap(index));
-                    window.scrollTo(0, document.body.scrollHeight);
+                    window.scrollTo(0,document.body.scrollHeight);
                 }
             } else {
                 window.scrollTo(0,0);
@@ -51,7 +53,7 @@ window.onload=function() {
     var fileInput=document.getElementById("fileInput");
     try {
         fileInput.addEventListener('change', function() {onLoadDatas(fileInput);});
-    } catch (error) {//老浏览器
+    } catch (error) {
         fileInput.onchange=function() {onLoadDatas(fileInput);}
     }
 
@@ -68,8 +70,7 @@ function handleChanged(dom) {//监测表格数据变化
 }
 
 function onHelp() {
-    var state=PROGRAM.getStatus();
-    if (state==1||state==3) {
+    if (PROGRAM.getStatus()==1) {
         PROGRAM.setStatus(4);
     }
 }
@@ -195,5 +196,39 @@ function onCalcScore() {//计算得分
         PROGRAM.setStatus(3);
         alert("计算完毕！");
         return;
+    }
+}
+
+function onPreview() {//预览
+    if (PROGRAM.getStatus()==4 && DRAW.isPreview()) {
+        DRAW.draw(initMap());
+    }
+}
+
+function onApply() {//应用
+    var MIN=[600,450,0,0,1,0];
+    var MAX=[1600,1200,800,600,50,5];
+    var newCanvas=[0,0,0,0,0,0];
+    if (PROGRAM.getStatus()==4 && DRAW.isPreview()) {
+        var table=document.getElementById("canvasset");
+        var value,number,input=table.getElementsByTagName("input");
+        var i,isOk=true;
+        for (i=0;i<input.length;i++) {
+            value=input[i].value;
+            if (/^\d+$/.test(value)) {
+                number=parseInt(value);
+                if (number<MIN[i] || number>MAX[i]) {
+                    alert("第"+String(i+1)+"个参数取值范围："+String(MIN[i])+"~"+String(MAX[i]));
+                    isOk=false;
+                } else {
+                    newCanvas[i]=number;
+                }
+            }
+        }
+        if (isOk) {
+            DRAW.applySet(newCanvas);
+            alert("设置成功！");
+            onPreview();
+        }
     }
 }
