@@ -91,20 +91,22 @@ function onSaveDatas() {
 
 function onLoadDatas(dom) {
     var file,fileName,fileExtension;
-    try {
-        file = dom.files[0];
-        fileName=file.name;
-    } catch (error) {//老浏览器
-        file = dom.value;
-        var parts = file.split(/[\/\\]/);
-        fileName=parts[parts.length - 1];
-    }
-    if (file) {//获取文件
-        fileExtension = fileName.split('.').pop();
-        if (fileExtension=="json") {
-            DATA.loadDatas(file);
-        } else {
-            alert("不是标准的json文件");
+    if (PROGRAM.getStatus()==1) {
+        try {
+            file = dom.files[0];
+            fileName=file.name;
+        } catch (error) {//老浏览器
+            file = dom.value;
+            var parts = file.split(/[\/\\]/);
+            fileName=parts[parts.length - 1];
+        }
+        if (file) {//获取文件
+            fileExtension = fileName.split('.').pop();
+            if (fileExtension=="json") {
+                DATA.loadDatas(file);
+            } else {
+                alert("不是标准的json文件");
+            }
         }
     }
 }
@@ -228,7 +230,7 @@ function onApply() {//应用
         if (isOk) {
             DRAW.applySet(newCanvas);
             alert("设置成功！");
-            onPreview();
+            DRAW.draw(initMap());
         }
     }
 }

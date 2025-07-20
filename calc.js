@@ -207,9 +207,14 @@ function calculate(totals) {//计算最佳拼图
     //生成地图
     for (i=0;i<10;i++) {maps[i]=initMap();}
 
-    /*
-        计算算法
-    */
+    //第一步：解决复杂拼图
+    var index=fixComplex(totals,maps);
+    //第二步：耕牛集群
+    index=fixGN(totals,maps,index);
+    //第三步：消耗剩余的基础拼图
+    fixBase(totals,maps,index);
+    //第四步：判断是否最高得分
+    bestPuzzle(totals,maps);
 
     //计算完毕
     PROGRAM.setCalc(calc(maps));
@@ -225,8 +230,32 @@ function initMap() {//初始化一张地图
             l=i<8 ? 2*i-1 : i>10 ? 33-2*i : 13;
         }
         for (j=0;j<k;j++) {map[i][j]=P_QB;}
-        for (j=0;j<l;j++) {map[i][j+k]=P_GN;}
+        for (j=0;j<l;j++) {map[i][j+k]=P_KB;}
         for (j=k+l;j<18;j++) {map[i][j]=P_QB;}
     }
     return map;
+}
+
+function fixComplex(totals,maps) {
+    var index=0;
+    //未完成
+    return index;
+}
+
+function fixGN(totals,maps,index) {
+    var newIndex=index;
+    //未完成
+    return newIndex;    
+}
+
+function fixBase(totals,maps,index) {
+    //没有返回值
+}
+
+function bestPuzzle(totals,maps) {
+    var change=true;
+    while(change) {
+        change=false;
+        //计算代码
+    }
 }
