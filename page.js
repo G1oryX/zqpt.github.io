@@ -225,6 +225,8 @@ function onApply() {//应用
                 } else {
                     newCanvas[i]=number;
                 }
+            } else {
+                isOk=false;
             }
         }
         if (isOk) {

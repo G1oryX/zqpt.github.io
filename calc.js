@@ -1,12 +1,14 @@
-var P_KB=0;//空白
-var P_TZ=1;//亭子
-var P_YGS=2;//月桂树
-var P_GN=3;//耕牛
-var P_FW=4;//房屋
-var P_DT=5;//稻田
-var P_CD=6;//草地
-var P_FS=7;//枫树
-var P_QB=8;//墙壁
+/*
+    var P_KB=0;//空白
+    var P_TZ=1;//亭子
+    var P_YGS=2;//月桂树
+    var P_GN=3;//耕牛
+    var P_FW=4;//房屋
+    var P_DT=5;//稻田
+    var P_CD=6;//草地
+    var P_FS=7;//枫树
+    var P_QB=8;//墙壁
+*/
 
 function calc(maps) {
     var total=0;
@@ -22,20 +24,20 @@ function calc(maps) {
         //初始化基础得分和加成得分
         for (i=1;i<17;i++) {
             for (j=MAP_START[i];j<17;j++) {k=map[i][j];
-                if (k==P_FS || k==P_GN || k==P_DT || k==P_CD || k==P_FW) {base[i][j]=50;}
+                if (k==7 || k==3 || k==5 || k==6 || k==4) {base[i][j]=50;}
             }
         }
         for (i=2;i<16;i++) {
             for (j=MAP_START[i];j<16;j++) {
                 l=[map[i][j],map[i+1][j],map[i][j+1],map[i+1][j+1]];
-                if (l[0]== P_TZ && l[1]==P_TZ && l[2]==P_TZ && l[3]==P_TZ) {
+                if (l[0]== 1 && l[1]==1 && l[2]==1 && l[3]==1) {
                     base[i][j]=200;
                     buff[i][j]=10000+i*100+j;
                     buff[i+1][j+1]=10000+i*100+j;
                     buff[i+1][j]=10000+i*100+j;
                     buff[i][j+1]=10000+i*100+j;
                 }
-                if (l[0]== P_YGS && l[1]==P_YGS && l[2]==P_YGS && l[3]==P_YGS) {
+                if (l[0]== 2 && l[1]==2 && l[2]==2 && l[3]==2) {
                     base[i][j]=150;
                     buff[i][j]=10000+i*100+j;
                     buff[i+1][j+1]=10000+i*100+j;
@@ -49,14 +51,14 @@ function calc(maps) {
         for (i=1;i<17;i++) {
             for (j=MAP_START[i];j<17;j++) {
                 k=map[i][j];
-                if (k==P_GN || k==P_DT || k==P_FW) {
-                    arr=[map[i-1][j]==P_GN || map[i-1][j]==P_DT,map[i+1][j]==P_GN || map[i+1][j]==P_DT,
-                        map[i][j-1]==P_GN || map[i][j-1]==P_DT,map[i][j+1]==P_GN || map[i][j+1]==P_DT
+                if (k==3 || k==5 || k==4) {
+                    arr=[map[i-1][j]==3 || map[i-1][j]==5,map[i+1][j]==3 || map[i+1][j]==5,
+                        map[i][j-1]==3 || map[i][j-1]==5,map[i][j+1]==3 || map[i][j+1]==5
                     ];
                     y=0;for(x=0;x<arr.length;x++) {
                         if (arr[x]) {y++;}
                         if (y>=2) {
-                            if (k==P_GN || k==P_DT) {buff[i][j]+=200;} else {buff[i][j]+=400;}
+                            if (k==3 || k==5) {buff[i][j]+=200;} else {buff[i][j]+=400;}
                             break;
                         }
                     }
@@ -66,25 +68,25 @@ function calc(maps) {
         for (i=2;i<16;i++) {
             for (j=MAP_START[i];j<16;j++) {
                 l=[map[i][j],map[i+1][j],map[i][j+1],map[i+1][j+1]];
-                if (l[0]== P_TZ && l[1]==P_TZ && l[2]==P_TZ && l[3]==P_TZ) {
-                    arr=[map[i-1][j]==P_GN || map[i-1][j]==P_DT,map[i+2][j]==P_GN || map[i+2][j]==P_DT,
-                        map[i][j-1]==P_GN || map[i][j-1]==P_DT,map[i][j+2]==P_GN || map[i][j+2]==P_DT,
-                        map[i-1][j+1]==P_GN || map[i-1][j+1]==P_DT,map[i+2][j+1]==P_GN || map[i+2][j+1]==P_DT,
-                        map[i+1][j-1]==P_GN || map[i+1][j-1]==P_DT,map[i+1][j+2]==P_GN || map[i+1][j+2]==P_DT
+                if (l[0]== 1 && l[1]==1 && l[2]==1 && l[3]==1) {
+                    arr=[map[i-1][j]==3 || map[i-1][j]==5,map[i+2][j]==3 || map[i+2][j]==5,
+                        map[i][j-1]==3 || map[i][j-1]==5,map[i][j+2]==3 || map[i][j+2]==5,
+                        map[i-1][j+1]==3 || map[i-1][j+1]==5,map[i+2][j+1]==3 || map[i+2][j+1]==5,
+                        map[i+1][j-1]==3 || map[i+1][j-1]==5,map[i+1][j+2]==3 || map[i+1][j+2]==5
                     ];
                     y=0;for(x=0;x<arr.length;x++) {
                         if (arr[x]) {y++;}
                         if (y>=2) {cbuff[i][j]+=100;break;}
                     }
-                    arr=[map[i-1][j]==P_FW,map[i+2][j]==P_FW,map[i][j-1]==P_FW,map[i][j+2]==P_FW,
-                        map[i-1][j+1]==P_FW,map[i+2][j+1]==P_FW,map[i+1][j-1]==P_FW,map[i+1][j+2]==P_FW
+                    arr=[map[i-1][j]==4,map[i+2][j]==4,map[i][j-1]==4,map[i][j+2]==4,
+                        map[i-1][j+1]==4,map[i+2][j+1]==4,map[i+1][j-1]==4,map[i+1][j+2]==4
                     ];
                     y=0;for(x=0;x<arr.length;x++) {
                         if (arr[x]) {y++;}
                         if (y>=2) {cbuff[i][j]+=100;break;}
                     }
-                    arr=[map[i-1][j]==P_FS, map[i+2][j]==P_FS,map[i][j-1]==P_FS,map[i][j+2]==P_FS,
-                        map[i-1][j+1]==P_FS,map[i+2][j+1]==P_FS,map[i+1][j-1]==P_FS,map[i+1][j+2]==P_FS
+                    arr=[map[i-1][j]==7, map[i+2][j]==7,map[i][j-1]==7,map[i][j+2]==7,
+                        map[i-1][j+1]==7,map[i+2][j+1]==7,map[i+1][j-1]==7,map[i+1][j+2]==7
                     ];
                     y=0;for(x=0;x<arr.length;x++) {
                         if (arr[x]) {y++;}
@@ -97,17 +99,17 @@ function calc(maps) {
         //计算环绕加成得分
         for (i=1;i<17;i++) {
             for (j=MAP_START[i];j<17;j++) {k=map[i][j];
-                if (k==P_GN) {//耕牛
-                    if (map[i-1][j-1]==P_GN || map[i-1][j-1]==P_DT) {buff[i-1][j-1]+=30;}
-                    if (map[i+1][j+1]==P_GN || map[i+1][j+1]==P_DT) {buff[i+1][j+1]+=30;}
-                    if (map[i][j+1]==P_GN || map[i][j+1]==P_DT) {buff[i][j+1]+=30;}
-                    if (map[i][j-1]==P_GN || map[i][j-1]==P_DT) {buff[i][j-1]+=30;}
-                    if (map[i+1][j]==P_GN || map[i+1][j]==P_DT) {buff[i+1][j]+=30;}
-                    if (map[i-1][j]==P_GN || map[i-1][j]==P_DT) {buff[i-1][j]+=30;}
-                    if (map[i-1][j+1]==P_GN || map[i-1][j+1]==P_DT) {buff[i-1][j+1]+=30;}
-                    if (map[i+1][j-1]==P_GN || map[i+1][j-1]==P_DT) {buff[i+1][j-1]+=30;}
+                if (k==3) {//耕牛
+                    if (map[i-1][j-1]==3 || map[i-1][j-1]==5) {buff[i-1][j-1]+=30;}
+                    if (map[i+1][j+1]==3 || map[i+1][j+1]==5) {buff[i+1][j+1]+=30;}
+                    if (map[i][j+1]==3 || map[i][j+1]==5) {buff[i][j+1]+=30;}
+                    if (map[i][j-1]==3 || map[i][j-1]==5) {buff[i][j-1]+=30;}
+                    if (map[i+1][j]==3 || map[i+1][j]==5) {buff[i+1][j]+=30;}
+                    if (map[i-1][j]==3 || map[i-1][j]==5) {buff[i-1][j]+=30;}
+                    if (map[i-1][j+1]==3 || map[i-1][j+1]==5) {buff[i-1][j+1]+=30;}
+                    if (map[i+1][j-1]==3 || map[i+1][j-1]==5) {buff[i+1][j-1]+=30;}
                 }
-                if (k==P_CD) {//草地
+                if (k==6) {//草地
                     var x,y,z,u,v;l=[0];
                     for (x=i-1;x<=i+1;x++) {
                         for (y=j-1;y<=j+1;y++) {z=buff[x][y];
@@ -124,15 +126,15 @@ function calc(maps) {
                     }
                     buff[i][j]-=20;
                 }
-                if (k==P_FS) {//枫树
-                    if (map[i-1][j-1]==P_GN || map[i-1][j-1]==P_DT || map[i-1][j-1]==P_FW) {buff[i-1][j-1]+=50;}
-                    if (map[i+1][j+1]==P_GN || map[i+1][j+1]==P_DT || map[i+1][j+1]==P_FW) {buff[i+1][j+1]+=50;}
-                    if (map[i][j+1]==P_GN || map[i][j+1]==P_DT || map[i][j+1]==P_FW) {buff[i][j+1]+=50;}
-                    if (map[i][j-1]==P_GN || map[i][j-1]==P_DT || map[i][j-1]==P_FW) {buff[i][j-1]+=50;}
-                    if (map[i+1][j]==P_GN || map[i+1][j]==P_DT || map[i+1][j]==P_FW) {buff[i+1][j]+=50;}
-                    if (map[i-1][j]==P_GN || map[i-1][j]==P_DT || map[i-1][j]==P_FW) {buff[i-1][j]+=50;}
-                    if (map[i-1][j+1]==P_GN || map[i-1][j+1]==P_DT || map[i-1][j+1]==P_FW) {buff[i-1][j+1]+=50;}
-                    if (map[i+1][j-1]==P_GN || map[i+1][j-1]==P_DT || map[i+1][j-1]==P_FW) {buff[i+1][j-1]+=50;}
+                if (k==7) {//枫树
+                    if (map[i-1][j-1]==3 || map[i-1][j-1]==5 || map[i-1][j-1]==4) {buff[i-1][j-1]+=50;}
+                    if (map[i+1][j+1]==3 || map[i+1][j+1]==5 || map[i+1][j+1]==4) {buff[i+1][j+1]+=50;}
+                    if (map[i][j+1]==3 || map[i][j+1]==5 || map[i][j+1]==4) {buff[i][j+1]+=50;}
+                    if (map[i][j-1]==3 || map[i][j-1]==5 || map[i][j-1]==4) {buff[i][j-1]+=50;}
+                    if (map[i+1][j]==3 || map[i+1][j]==5 || map[i+1][j]==4) {buff[i+1][j]+=50;}
+                    if (map[i-1][j]==3 || map[i-1][j]==5 || map[i-1][j]==4) {buff[i-1][j]+=50;}
+                    if (map[i-1][j+1]==3 || map[i-1][j+1]==5 || map[i-1][j+1]==4) {buff[i-1][j+1]+=50;}
+                    if (map[i+1][j-1]==3 || map[i+1][j-1]==5 || map[i+1][j-1]==4) {buff[i+1][j-1]+=50;}
                 }
             }
         }
@@ -140,7 +142,7 @@ function calc(maps) {
         for (i=2;i<16;i++) {//月桂树
             for (j=MAP_START[i];j<16;j++) {
                 l=[map[i][j],map[i+1][j],map[i][j+1],map[i+1][j+1]];
-                if (l[0]== P_YGS && l[1]==P_YGS && l[2]==P_YGS && l[3]==P_YGS) {
+                if (l[0]== 2 && l[1]==2 && l[2]==2 && l[3]==2) {
                     var x,y,z,u,v;l=[buff[i][j]];
                     for (y=j-2;y<=j+3;y++) {
                         for (x=i-2;x<=i+3;x++) {
@@ -183,7 +185,7 @@ function calc(maps) {
                         l=MAP_LENGTH[i];
                         for (j=0;j<l;j++) {
                             cube=map[i][j+k];
-                            if (cube==P_TZ || cube==P_YGS) {complex++;} else {if (cube!=P_KB) {base++;}}
+                            if (cube==1 || cube==2) {complex++;} else {if (cube!=0) {base++;}}
                         }
                     }
                 }
@@ -229,9 +231,9 @@ function initMap() {//初始化一张地图
             k=i<10 ? 11-i : i-9;
             l=i<8 ? 2*i-1 : i>10 ? 33-2*i : 13;
         }
-        for (j=0;j<k;j++) {map[i][j]=P_QB;}
-        for (j=0;j<l;j++) {map[i][j+k]=P_KB;}
-        for (j=k+l;j<18;j++) {map[i][j]=P_QB;}
+        for (j=0;j<k;j++) {map[i][j]=8;}
+        for (j=0;j<l;j++) {map[i][j+k]=0;}
+        for (j=k+l;j<18;j++) {map[i][j]=8;}
     }
     return map;
 }
