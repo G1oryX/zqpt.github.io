@@ -134,14 +134,14 @@ function onReturn() {
 }
 
 function onCalcScore() {//计算得分
-    var CHECK_MAX_RATIO=1.5;
+    var CHECK_MAX_RATIO=1.8;
     var CHECK_MIN_VALUE=2;
     var CHECK_MAX_COUNT=15;
     if (PROGRAM.getStatus()==1) {//刷新页面
         PROGRAM.setStatus(2);
         var datas=DATA.getTableDatas();
-        var i,j,k,all;
-        var totals=[0,0,0,0,0,0,0];
+        var i,j,k,all,full,max,min;
+        var totals=[0,0,0,0,0,0,0,0];
 
         //保存原表格数据
         var newDatas=DATA.initDatas();
@@ -149,7 +149,8 @@ function onCalcScore() {//计算得分
             newDatas[i]=datas[i];
         }
         for (i=47;i<94;i++) {all=0;
-            for (j=0;j<7;j++) {
+            full=false;
+            for (j=0;j<5;j++) {
                 k=datas[i][j];
                 if (k>0) {
                     if (all+k<=CHECK_MAX_COUNT) {
@@ -159,15 +160,30 @@ function onCalcScore() {//计算得分
                     } else {
                         newDatas[i][j]=CHECK_MAX_COUNT-all;
                         totals[j]+=CHECK_MAX_COUNT-all;
+                        full=true;
                         break;
                     }
                 }
             }
+            if (!full) {
+                k=all+datas[i][5]+datas[i][6]-CHECK_MAX_COUNT;
+                if (k>0) {//datas[i][5]和datas[i][6]选CHECK_MAX_COUNT-all个
+                    newDatas[i][5]=Math.max(0,CHECK_MAX_COUNT-all-datas[i][6]);
+                    newDatas[i][6]=Math.max(0,CHECK_MAX_COUNT-all-datas[i][5]);
+                    totals[7]+=(CHECK_MAX_COUNT-all-newDatas[i][5]-newDatas[i][6]);
+                } else {
+                    newDatas[i][5]=datas[i][5];
+                    newDatas[i][6]=datas[i][6];
+                }
+                totals[5]+=newDatas[i][5];
+                totals[6]+=newDatas[i][6];
+            }
         }
 
         //总数检查
-        var max=Math.max(totals[2],totals[3],totals[4],totals[5],totals[6]);
-        var min=Math.min(totals[2],totals[3],totals[4],totals[5],totals[6]);
+        console.log(totals);
+        max=Math.max(totals[2],totals[3],totals[4],totals[5],totals[6]);
+        min=Math.min(totals[2],totals[3],totals[4],totals[5],totals[6]);
         if (min<=CHECK_MIN_VALUE) {
             alert("稻田、房屋、耕牛、草地、枫树。每种总数不能少于"+String(CHECK_MIN_VALUE));
             PROGRAM.setStatus(1);
