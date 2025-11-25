@@ -142,10 +142,12 @@ function onCalcScore() {//计算得分
         var datas=DATA.getTableDatas();
         var i,j,k,all,full,max,min;
         var totals=[0,0,0,0,0,0,0,0];
+        var selects=[];
 
         //保存原表格数据
         var newDatas=DATA.initDatas();
         for (i=0;i<47;i++) {
+            selects[i]=0;
             newDatas[i]=datas[i];
         }
         for (i=47;i<94;i++) {all=0;
@@ -170,7 +172,8 @@ function onCalcScore() {//计算得分
                 if (k>0) {//datas[i][5]和datas[i][6]选CHECK_MAX_COUNT-all个
                     newDatas[i][5]=Math.max(0,CHECK_MAX_COUNT-all-datas[i][6]);
                     newDatas[i][6]=Math.max(0,CHECK_MAX_COUNT-all-datas[i][5]);
-                    totals[7]+=(CHECK_MAX_COUNT-all-newDatas[i][5]-newDatas[i][6]);
+                    selects[i-47]=CHECK_MAX_COUNT-all-newDatas[i][5]-newDatas[i][6];
+                    totals[7]+=selects[i-47];
                 } else {
                     newDatas[i][5]=datas[i][5];
                     newDatas[i][6]=datas[i][6];
@@ -205,12 +208,25 @@ function onCalcScore() {//计算得分
             return;
         }
 
-        //更新表格数据
+        //保存源数据
         DATA.setDatas(datas);
-        DATA.setTableDatas(datas,newDatas);
-
+        
         //开始计算
-        calculate(totals);
+        var glass=calculate(totals);
+        for(i=0;i<47;i++) {//计算后的表格数据
+            if (selects[i]!=0) {
+                if (glass>=selects[i]) {
+                    newDatas[i+47][5]+=selects[i];
+                    glass-=selects[i];
+                } else {
+                    newDatas[i+47][5]+=glass;
+                    newDatas[i+47][6]+=(selects[i]-glass);
+                    glass=0;
+                }
+            }
+        }
+        //设置表格数据
+        DATA.setTableDatas(datas,newDatas);
         PROGRAM.setStatus(3);
         alert("计算完毕！");
         return;
